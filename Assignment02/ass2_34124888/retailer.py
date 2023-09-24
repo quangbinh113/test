@@ -39,12 +39,10 @@ class Retailer:
         new_retailer_id: int
             new randomly generated retailer id
         """
-        list_retailer.append(Retailer)
-        new_retailer_id = random.randint(10000000, 99999999)  # Create a random retailer_id of 8 digits
-        existing_retailer_id = [item.retailer_id for item in Retailer.list_retailer]
+        existing_retailer_id = [item.retailer_id for item in list_retailer]
         while True:  # keep checking until find the unique one
-            if new_retailer_id in existing_retailer_id:
-                new_retailer_id = random.randint(10000000, 99999999)  # Recreate a new retailer_id if existed
-            else:
+            new_retailer_id = random.randint(10000000, 99999999)  # Recreate a new retailer_id if existed
+            if new_retailer_id not in existing_retailer_id:
+                self.retailer_id = new_retailer_id  # Assign retailer_id with generated random id
                 break
-        self.retailer_id = new_retailer_id  # Assign retailer_id with generated random id
+        

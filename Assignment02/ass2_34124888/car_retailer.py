@@ -10,7 +10,7 @@ from car import Car  # Assuming Car class is defined in 'car.py'
 from order import Order
 import random
 
-path = r'E:\assignment\Assignment02\data\stock.txt'
+path = r'E:\assignment\test\Assignment02\data\stock.txt'
 
 
 class CarRetailer(Retailer):
@@ -148,14 +148,14 @@ class CarRetailer(Retailer):
     def add_to_stock(self, car):
         formattedfile = self.format_file(path)
         # Call method format_file to get the dictionary of retailer and car stock
-        car_info = [car.car_code, car.car_name, car.car_capacity,
-                 car.car_horsepower, car.car_weight, car.car_type]
+        car_info = ", ".join(str(val) for val in [car.car_code, car.car_name, car.car_capacity,
+                 car.car_horsepower, car.car_weight, car.car_type])
         # Create a list to store info of the car with each info as an item
         stock = self.get_all_stock()
         if car not in stock:  # Check whether the car is not in the retailer stock
             for retailer in formattedfile.keys():
                 if str(self.retailer_id) in retailer:
-                    formattedfile[car_info].append(car_info)  # Add the car info into the dictionary
+                    formattedfile[retailer].append(car_info)  # Add the car info into the dictionary
                     self.update_stock_file(path, formattedfile)  # Update in the 'stock.txt' file
                     return True
         return False

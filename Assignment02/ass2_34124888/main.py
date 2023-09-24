@@ -24,13 +24,13 @@ def main_menu():
 def generate_test_data():
     list_retailer = []
     # Create car retailers
-    retailer1 = CarRetailer(0, "kfhjlskdhfgj", "City of Maroondah, VIC3135", (8.8, 14.2), [])   
+    retailer1 = CarRetailer(None, "kfhjlskdhfgj", "City of Maroondah", "VIC3135", (8.8, 14.2))   
     retailer1.retailer_id = retailer1.generate_retailer_id(list_retailer)
     list_retailer.append(retailer1)
-    retailer2 = CarRetailer(0, "dbjkassad", "Shire of Yarra Ranges, VIC3160", (11.1, 13.4), [])
+    retailer2 = CarRetailer(None, "dbjkassad", "Shire of Yarra Ranges", "VIC3160", (11.1, 13.4))
     retailer2.retailer_id = retailer2.generate_retailer_id(list_retailer)
     list_retailer.append(retailer2)
-    retailer3 = CarRetailer(0, "fdgsdfdsgd", "City of Whittlesea, VIC3754", (9.6, 16.5), [])
+    retailer3 = CarRetailer(None, "fdgsdfdsgd", "City of Whittlesea", "VIC3754", (9.6, 16.5))
     retailer3.retailer_id = retailer3.generate_retailer_id(list_retailer)
     list_retailer.append(retailer3)
 
@@ -71,18 +71,11 @@ def generate_test_data():
         # Add cars to retailers' stock
         retailer3.add_to_stock(car)
 
+    print(list_retailer)
     for car_retailer in list_retailer:
-        car_retailer_info = ', '.join(
-            [
-                str(car_retailer.retailer_id), 
-                str(car_retailer.retailer_name), 
-                str(car_retailer.carretailer_address), 
-                str(car_retailer.carretailer_business_hours),
-                str(car_retailer.carretailer_stock)
-            ]
-        )
+        car_retailer_info = car_retailer.__str__()
         retailer_stock = ', '.join([car.__str__() for car in car_retailer.get_all_stock()])
-        with open(r'E:\assignment\Assignment02\data\stock.txt', 'a') as f:
+        with open(r'E:\assignment\test\Assignment02\data\stock.txt', 'a') as f:
             f.write(f"{car_retailer_info}, [{retailer_stock}]\n")
 
 
