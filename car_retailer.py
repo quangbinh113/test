@@ -2,34 +2,49 @@ from retailer import Retailer  # Assuming Retailer class is defined in 'retailer
 from car import Car  # Assuming Car class is defined in 'car.py'
 import random
 
-PATH_STOCK = r'C:\Users\binh.truong\Code\asignment\data\stock.txt'
-def
+PATH_STOCK = r'E:\assignment\test\data\stock.txt'
+
+def get_car_code(PATH: str) -> dict:
+    try:
+        with open(PATH, 'r') as f:
+            lines = f.readlines()
+            dic = {}
+            for line in lines:
+                detail = line.strip().split(', ')
+                key = int(detail[0])
+                dic[key] = []
+                lst = detail[6:]
+                for i in range(0, len(lst), 6):
+                    car_info = lst[i:i+6]
+                    res = []
+                    for val in car_info:
+                        res.append(val.replace('[', '').replace(']', '').replace("'", ''))
+                    dic[key].append(res)
+        return dic
+    except FileNotFoundError:
+        print(f"Error: File '{PATH_STOCK}' not found.")
+
 
 class CarRetailer(Retailer):
     def __init__(self, retailer_id: int, retailer_name: str, carretailer_address="", 
-                 carretailer_business_hours=(8.0, 17.0), carretailer_stock=None) -> None:
+                 carretailer_business_hours=(), carretailer_stock=[]) -> None:
         
         super().__init__(retailer_id, retailer_name)  # Inherit from Retailer class
         self.carretailer_address = carretailer_address
         self.carretailer_business_hours = carretailer_business_hours
-        self.carretailer_stock = carretailer_stock if carretailer_stock is not None else []
-        self.all_stock = []
+        self.carretailer_stock = []
+        self.all_stock = [object, object, object]
+
 
     def __str__(self):
         return f"{super().__str__()}, {self.carretailer_address}, {self.carretailer_business_hours}, {self.carretailer_stock}"
 
     def load_current_stock(self, path):
-        try:
-            with open(PATH_STOCK, 'r') as file:
-                lines = file.readlines()
-                for line in lines:
-                    detail = line.strip().split(', ')
-                    if int(detail[0]) == self.retailer_id:
-                        available_cars = detail[-1]
-                        self.carretailer_stock = [car.split(', ')[0] for car in available_cars]
-            return self.carretailer_stock
-        except FileNotFoundError:
-            print(f"Error: File '{PATH_STOCK}' not found.")
+        stock = get_car_code(path)
+        for key, value in stock.items():
+            if key == self.retailer_id:
+                for car in value:
+                    self.carretailer_stock.append(car[0])
 
     def is_operating(self, cur_hour):
         # Check if the car retailer is currently operating based on business hours
@@ -58,12 +73,33 @@ class CarRetailer(Retailer):
         return abs(postcode - retailer_postcode)
 
     def remove_from_stock(self, car_code):
-        # Remove a car from the current stock at the car retailer
-        if car_code in self.carretailer_stock:
-            self.carretailer_stock.remove(car_code)
-            return True
-        else:
-            return False  # Car not found in stock
+        for car_info in self.carretailer_stock:
+            if car_code == car_info[0]:
+                self.carretailer_stock.remove(car_info)
+                self.update_stock_file()  # Update the stock file
+                return True
+        return False
+
+    def update_stock_file(self):
+        try:
+            with open('data/stock.txt', 'r') as file:
+                lines = file.readlines()
+
+            # Update the stock data for this retailer in the lines
+            for i, line in enumerate(lines):
+                retailer_info = line.strip().split(', ')
+                retailer_id = int(retailer_info[0])
+                if retailer_id == self.retailer_id:
+                    # Remove the car from this retailer's stock
+                    for car_info in self.carretailer_stock:
+                        car_code = car_info[0]
+                        lines[i] = lines[i].replace(f"'{car_code}', ", '')  # Remove the car entry from the line
+
+            # Write the updated lines back to the stock file
+            with open('data/stock.txt', 'w') as file:
+                file.writelines(lines)
+        except FileNotFoundError:
+            print(f"Error: File 'data/stock.txt' not found.")
 
     def add_to_stock(self, car):
         # Add a car to the current stock at the car retailer
@@ -103,8 +139,13 @@ class CarRetailer(Retailer):
     #     # You can implement this based on the provided steps in your assignment
     #     pass  # Implement this method based on assignment requirements
 
+if __name__ == "__main__":
 
-r = CarRetailer(88727858, 'dLrIrEaovi')
-test = r.load_current_stock(PATH_STOCK)
-print(test)
-print(r.carretailer_stock)
+    r = CarRetailer(88727858, 'dLrIrEaovi')
+    r.load_current_stock(PATH_STOCK)
+
+    print(r.carretailer_stock)
+    print(type(r))
+    r.remove_from_stock('BY962504')
+
+    
